@@ -157,6 +157,15 @@ func (self *RebaseCommands) EditRebase(branchRef string) error {
 	}).Run()
 }
 
+func (self *RebaseCommands) EditRebaseFromBaseCommit(targetBranchName string, baseCommit string) error {
+	self.os.LogCommand(fmt.Sprintf("Beginning interactive rebase from '%s' onto '%s", baseCommit, targetBranchName), false)
+	return self.PrepareInteractiveRebaseCommand(PrepareInteractiveRebaseCommandOpts{
+		baseShaOrRoot: baseCommit,
+		onto:          targetBranchName,
+		instruction:   daemon.NewInsertBreakInstruction(),
+	}).Run()
+}
+
 func logTodoChanges(changes []daemon.ChangeTodoAction) string {
 	changeTodoStr := strings.Join(slices.Map(changes, func(c daemon.ChangeTodoAction) string {
 		return fmt.Sprintf("%s:%s", c.Sha, c.NewAction)
@@ -166,6 +175,7 @@ func logTodoChanges(changes []daemon.ChangeTodoAction) string {
 
 type PrepareInteractiveRebaseCommandOpts struct {
 	baseShaOrRoot              string
+	onto                       string
 	instruction                daemon.Instruction
 	overrideEditor             bool
 	keepCommitsThatBecomeEmpty bool
@@ -184,6 +194,7 @@ func (self *RebaseCommands) PrepareInteractiveRebaseCommand(opts PrepareInteract
 		ArgIf(opts.keepCommitsThatBecomeEmpty && !self.version.IsOlderThan(2, 26, 0), "--empty=keep").
 		Arg("--no-autosquash").
 		ArgIf(!self.version.IsOlderThan(2, 22, 0), "--rebase-merges").
+		ArgIf(opts.onto != "", "--onto", opts.onto).
 		Arg(opts.baseShaOrRoot).
 		ToArgv()
 
@@ -305,6 +316,13 @@ func (self *RebaseCommands) BeginInteractiveRebaseForCommit(
 // RebaseBranch interactive rebases onto a branch
 func (self *RebaseCommands) RebaseBranch(branchName string) error {
 	return self.PrepareInteractiveRebaseCommand(PrepareInteractiveRebaseCommandOpts{baseShaOrRoot: branchName}).Run()
+}
+
+func (self *RebaseCommands) RebaseBranchFromBaseCommit(targetBranchName string, baseCommit string) error {
+	return self.PrepareInteractiveRebaseCommand(PrepareInteractiveRebaseCommandOpts{
+		baseShaOrRoot: baseCommit,
+		onto:          targetBranchName,
+	}).Run()
 }
 
 func (self *RebaseCommands) GenericMergeOrRebaseActionCmdObj(commandType string, command string) oscommands.ICmdObj {

@@ -42,6 +42,7 @@ func GetCommitListDisplayStrings(
 	fullDescription bool,
 	cherryPickedCommitShaSet *set.Set[string],
 	diffName string,
+	markedBaseCommit string,
 	timeFormat string,
 	shortTimeFormat string,
 	now time.Time,
@@ -109,10 +110,12 @@ func GetCommitListDisplayStrings(
 			isYouAreHereCommit = true
 			showYouAreHereLabel = false
 		}
+		isMarkedBaseCommit := commit.Sha != "" && commit.Sha == markedBaseCommit
 		lines = append(lines, displayCommit(
 			common,
 			commit,
 			cherryPickedCommitShaSet,
+			isMarkedBaseCommit,
 			diffName,
 			timeFormat,
 			shortTimeFormat,
@@ -261,6 +264,7 @@ func displayCommit(
 	common *common.Common,
 	commit *models.Commit,
 	cherryPickedCommitShaSet *set.Set[string],
+	isMarkedBaseCommit bool,
 	diffName string,
 	timeFormat string,
 	shortTimeFormat string,
@@ -272,7 +276,7 @@ func displayCommit(
 	bisectInfo *git_commands.BisectInfo,
 	isYouAreHereCommit bool,
 ) []string {
-	shaColor := getShaColor(commit, diffName, cherryPickedCommitShaSet, bisectStatus, bisectInfo)
+	shaColor := getShaColor(commit, diffName, cherryPickedCommitShaSet, isMarkedBaseCommit, bisectStatus, bisectInfo)
 	bisectString := getBisectStatusText(bisectStatus, bisectInfo)
 
 	actionString := ""
@@ -355,6 +359,7 @@ func getShaColor(
 	commit *models.Commit,
 	diffName string,
 	cherryPickedCommitShaSet *set.Set[string],
+	isMarkedBaseCommit bool,
 	bisectStatus BisectStatus,
 	bisectInfo *git_commands.BisectInfo,
 ) style.TextStyle {
@@ -378,7 +383,9 @@ func getShaColor(
 	default:
 	}
 
-	if diffed {
+	if isMarkedBaseCommit {
+		shaColor = theme.MarkedBaseCommitTextStyle
+	} else if diffed {
 		shaColor = theme.DiffTerminalColor
 	} else if cherryPickedCommitShaSet.Includes(commit.Sha) {
 		shaColor = theme.CherryPickedCommitTextStyle

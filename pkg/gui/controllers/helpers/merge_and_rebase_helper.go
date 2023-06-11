@@ -9,6 +9,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/commands/types/enums"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/samber/lo"
 )
 
 type MergeAndRebaseHelper struct {
@@ -224,8 +225,15 @@ func (self *MergeAndRebaseHelper) RebaseOntoRef(ref string) error {
 			Key:   's',
 			OnPress: func() error {
 				self.c.LogAction(self.c.Tr.Actions.RebaseBranch)
-				err := self.c.Git().Rebase.RebaseBranch(ref)
-				return self.CheckMergeOrRebase(err)
+				baseCommit := self.c.Modes().MarkedBaseCommit.GetSha()
+				err := lo.Ternary(baseCommit != "",
+					self.c.Git().Rebase.RebaseBranchFromBaseCommit(ref, baseCommit),
+					self.c.Git().Rebase.RebaseBranch(ref))
+				err = self.CheckMergeOrRebase(err)
+				if err == nil {
+					self.c.Modes().MarkedBaseCommit.Reset()
+				}
+				return err
 			},
 		},
 		{
@@ -234,17 +242,23 @@ func (self *MergeAndRebaseHelper) RebaseOntoRef(ref string) error {
 			Tooltip: self.c.Tr.InteractiveRebaseTooltip,
 			OnPress: func() error {
 				self.c.LogAction(self.c.Tr.Actions.RebaseBranch)
-				err := self.c.Git().Rebase.EditRebase(ref)
+				baseCommit := self.c.Modes().MarkedBaseCommit.GetSha()
+				err := lo.Ternary(baseCommit != "",
+					self.c.Git().Rebase.EditRebaseFromBaseCommit(ref, baseCommit),
+					self.c.Git().Rebase.EditRebase(ref))
 				if err = self.CheckMergeOrRebase(err); err != nil {
 					return err
 				}
+				self.c.Modes().MarkedBaseCommit.Reset()
 				return self.c.PushContext(self.c.Contexts().LocalCommits)
 			},
 		},
 	}
 
 	title := utils.ResolvePlaceholderString(
-		self.c.Tr.RebasingTitle,
+		lo.Ternary(self.c.Modes().MarkedBaseCommit.GetSha() != "",
+			self.c.Tr.RebasingFromBaseCommitTitle,
+			self.c.Tr.RebasingTitle),
 		map[string]string{
 			"checkedOutBranch": checkedOutBranch,
 			"ref":              ref,
@@ -282,4 +296,9 @@ func (self *MergeAndRebaseHelper) MergeRefIntoCheckedOutBranch(refName string) e
 			return self.CheckMergeOrRebase(err)
 		},
 	})
+}
+
+func (self *MergeAndRebaseHelper) ResetMarkedBaseCommit() error {
+	self.c.Modes().MarkedBaseCommit.Reset()
+	return self.c.PostRefreshUpdate(self.c.Contexts().LocalCommits)
 }

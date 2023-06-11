@@ -68,6 +68,8 @@ type ThemeConfig struct {
 	SelectedRangeBgColor       []string `yaml:"selectedRangeBgColor"`
 	CherryPickedCommitBgColor  []string `yaml:"cherryPickedCommitBgColor"`
 	CherryPickedCommitFgColor  []string `yaml:"cherryPickedCommitFgColor"`
+	MarkedBaseCommitBgColor    []string `yaml:"markedBaseCommitBgColor"`
+	MarkedBaseCommitFgColor    []string `yaml:"markedBaseCommitFgColor"`
 	UnstagedChangesColor       []string `yaml:"unstagedChangesColor"`
 	DefaultFgColor             []string `yaml:"defaultFgColor"`
 }
@@ -263,6 +265,7 @@ type KeybindingCommitsConfig struct {
 	CherryPickCopy                 string `yaml:"cherryPickCopy"`
 	CherryPickCopyRange            string `yaml:"cherryPickCopyRange"`
 	PasteCommits                   string `yaml:"pasteCommits"`
+	MarkCommitAsBaseForRebase      string `yaml:"markCommitAsBaseForRebase"`
 	CreateTag                      string `yaml:"tagCommit"`
 	CheckoutCommit                 string `yaml:"checkoutCommit"`
 	ResetCherryPick                string `yaml:"resetCherryPick"`
@@ -422,6 +425,8 @@ func GetDefaultConfig() *UserConfig {
 				SelectedRangeBgColor:       []string{"blue"},
 				CherryPickedCommitBgColor:  []string{"cyan"},
 				CherryPickedCommitFgColor:  []string{"blue"},
+				MarkedBaseCommitBgColor:    []string{"yellow"},
+				MarkedBaseCommitFgColor:    []string{"blue"},
 				UnstagedChangesColor:       []string{"red"},
 				DefaultFgColor:             []string{"default"},
 			},
@@ -601,6 +606,7 @@ func GetDefaultConfig() *UserConfig {
 				CherryPickCopy:                 "c",
 				CherryPickCopyRange:            "C",
 				PasteCommits:                   "v",
+				MarkCommitAsBaseForRebase:      "B",
 				CreateTag:                      "T",
 				CheckoutCommit:                 "<space>",
 				ResetCherryPick:                "<c-R>",
