@@ -42,7 +42,7 @@ var RebaseFromMarkedBase = NewIntegrationTest(NewIntegrationTestArgs{
 			Lines(
 				Contains("active three"),
 				Contains("active two"),
-				Contains("active one"),
+				Contains("↑↑↑ Rebase from here ↑↑↑ active one"),
 				Contains("three"),
 				Contains("two"),
 				Contains("one"),

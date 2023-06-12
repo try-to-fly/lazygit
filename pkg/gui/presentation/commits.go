@@ -307,6 +307,9 @@ func displayCommit(
 		color := lo.Ternary(commit.Action == models.ActionConflict, style.FgRed, style.FgYellow)
 		youAreHere := color.Sprintf("<-- %s ---", common.Tr.YouAreHere)
 		name = fmt.Sprintf("%s %s", youAreHere, name)
+	} else if isMarkedBaseCommit {
+		rebaseFromHere := style.FgYellow.Sprint(common.Tr.MarkedCommitMarker)
+		name = fmt.Sprintf("%s %s", rebaseFromHere, name)
 	}
 
 	authorFunc := authors.ShortAuthor

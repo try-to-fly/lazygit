@@ -545,6 +545,7 @@ type TranslationSet struct {
 	MarkedBaseCommitStatus              string
 	MarkAsBaseCommit                    string
 	MarkAsBaseCommitTooltip             string
+	MarkedCommitMarker                  string
 	Actions                             Actions
 	Bisect                              Bisect
 }
@@ -1243,6 +1244,7 @@ func EnglishTranslationSet() TranslationSet {
 		MarkedBaseCommitStatus:              "Marked a base commit for rebase",
 		MarkAsBaseCommit:                    "Mark commit as base commit for rebase",
 		MarkAsBaseCommitTooltip:             "Select a base commit for the next rebase; this will effectively perform a 'git rebase --onto'.",
+		MarkedCommitMarker:                  "↑↑↑ Rebase from here ↑↑↑",
 		Actions: Actions{
 			// TODO: combine this with the original keybinding descriptions (those are all in lowercase atm)
 			CheckoutCommit:                    "Checkout commit",
