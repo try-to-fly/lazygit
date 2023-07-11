@@ -28,6 +28,8 @@ func TestGetCommitListDisplayStrings(t *testing.T) {
 	scenarios := []struct {
 		testName                 string
 		commits                  []*models.Commit
+		branches                 []*models.Branch
+		currentBranchName        string
 		fullDescription          bool
 		cherryPickedCommitShaSet *set.Set[string]
 		diffName                 string
@@ -70,6 +72,34 @@ func TestGetCommitListDisplayStrings(t *testing.T) {
 			expected: formatExpected(`
 		sha1 commit1
 		sha2 commit2
+						`),
+		},
+		{
+			testName: "show local branch head, except the current branch, main branches, or merged branches",
+			commits: []*models.Commit{
+				{Name: "commit1", Sha: "sha1"},
+				{Name: "commit2", Sha: "sha2"},
+				{Name: "commit3", Sha: "sha3"},
+				{Name: "commit4", Sha: "sha4", Status: models.StatusMerged},
+			},
+			branches: []*models.Branch{
+				{Name: "current-branch", CommitHash: "sha1", Head: true},
+				{Name: "other-branch", CommitHash: "sha2", Head: false},
+				{Name: "master", CommitHash: "sha3", Head: false},
+				{Name: "old-branch", CommitHash: "sha4", Head: false},
+			},
+			currentBranchName:        "current-branch",
+			startIdx:                 0,
+			length:                   4,
+			showGraph:                false,
+			bisectInfo:               git_commands.NewNullBisectInfo(),
+			cherryPickedCommitShaSet: set.New[string](),
+			now:                      time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+			expected: formatExpected(`
+		sha1 commit1
+		sha2 * commit2
+		sha3 commit3
+		sha4 commit4
 						`),
 		},
 		{
@@ -285,6 +315,8 @@ func TestGetCommitListDisplayStrings(t *testing.T) {
 				result := GetCommitListDisplayStrings(
 					common,
 					s.commits,
+					s.branches,
+					s.currentBranchName,
 					s.fullDescription,
 					s.cherryPickedCommitShaSet,
 					s.diffName,
