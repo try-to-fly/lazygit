@@ -5,11 +5,12 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/jesseduffield/generics/slices"
 	gogit "github.com/jesseduffield/go-git/v5"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/commands/oscommands"
 	"github.com/jesseduffield/lazygit/pkg/common"
+	"github.com/samber/lo"
+	"golang.org/x/exp/slices"
 )
 
 type RemoteLoader struct {
@@ -43,12 +44,12 @@ func (self *RemoteLoader) GetRemotes() ([]*models.Remote, error) {
 	}
 
 	// first step is to get our remotes from go-git
-	remotes := slices.Map(goGitRemotes, func(goGitRemote *gogit.Remote) *models.Remote {
+	remotes := lo.Map(goGitRemotes, func(goGitRemote *gogit.Remote, _ int) *models.Remote {
 		remoteName := goGitRemote.Config().Name
 
 		re := regexp.MustCompile(fmt.Sprintf(`(?m)^\s*%s\/([\S]+)`, regexp.QuoteMeta(remoteName)))
 		matches := re.FindAllStringSubmatch(remoteBranchesStr, -1)
-		branches := slices.Map(matches, func(match []string) *models.RemoteBranch {
+		branches := lo.Map(matches, func(match []string, _ int) *models.RemoteBranch {
 			return &models.RemoteBranch{
 				Name:       match[1],
 				RemoteName: remoteName,

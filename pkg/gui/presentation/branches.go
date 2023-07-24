@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jesseduffield/generics/slices"
 	"github.com/jesseduffield/lazygit/pkg/commands/models"
 	"github.com/jesseduffield/lazygit/pkg/config"
 	"github.com/jesseduffield/lazygit/pkg/gui/presentation/icons"
@@ -12,6 +11,7 @@ import (
 	"github.com/jesseduffield/lazygit/pkg/i18n"
 	"github.com/jesseduffield/lazygit/pkg/theme"
 	"github.com/jesseduffield/lazygit/pkg/utils"
+	"github.com/samber/lo"
 )
 
 var branchPrefixColorCache = make(map[string]style.TextStyle)
@@ -23,7 +23,7 @@ func GetBranchListDisplayStrings(
 	tr *i18n.TranslationSet,
 	userConfig *config.UserConfig,
 ) [][]string {
-	return slices.Map(branches, func(branch *models.Branch) []string {
+	return lo.Map(branches, func(branch *models.Branch, _ int) []string {
 		diffed := branch.Name == diffName
 		return getBranchDisplayStrings(branch, fullDescription, diffed, tr, userConfig)
 	})
