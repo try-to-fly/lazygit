@@ -357,6 +357,8 @@ type TranslationSet struct {
 	PushTag                             string
 	CreateTag                           string
 	CreatingTag                         string
+	ForceTag                            string
+	ForceTagPrompt                      string
 	FetchRemote                         string
 	FetchingRemoteStatus                string
 	CheckoutCommit                      string
@@ -1052,6 +1054,8 @@ func EnglishTranslationSet() TranslationSet {
 		PushTag:                             "Push tag",
 		CreateTag:                           "Create tag",
 		CreatingTag:                         "Creating tag",
+		ForceTag:                            "Force Tag",
+		ForceTagPrompt:                      "The tag '{{.tagName}}' exists already. Press 'esc' to cancel, or 'enter' to overwrite.",
 		FetchRemote:                         "Fetch remote",
 		FetchingRemoteStatus:                "Fetching remote",
 		CheckoutCommit:                      "Checkout commit",
