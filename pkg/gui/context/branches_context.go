@@ -82,3 +82,7 @@ func (self *BranchesContext) GetDiffTerminals() []string {
 	}
 	return nil
 }
+
+func (self *BranchesContext) ShowBranchHeadsInSubCommits() bool {
+	return true
+}
