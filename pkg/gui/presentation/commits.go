@@ -106,7 +106,7 @@ func GetCommitListDisplayStrings(
 	// that are not the current branch, and not any of the main branches. The
 	// goal is to visualize stacks of local branches, so anything that doesn't
 	// contribute to a branch stack shouldn't show a marker.
-	branchHeadsToVisualize := lo.SliceToMap(lo.FilterMap(branches,
+	branchHeadsToVisualize := set.NewFromSlice(lo.FilterMap(branches,
 		func(b *models.Branch, index int) (string, bool) {
 			return b.CommitHash,
 				// Don't consider branches that don't have a commit hash. As far
@@ -117,7 +117,7 @@ func GetCommitListDisplayStrings(
 					b.Name != currentBranchName &&
 					// Don't show a marker for main branches
 					!lo.Contains(common.UserConfig.Git.MainBranches, b.Name)
-		}), func(s string) (string, struct{}) { return s, struct{}{} })
+		}))
 
 	lines := make([][]string, 0, len(filteredCommits))
 	var bisectStatus BisectStatus
@@ -281,7 +281,7 @@ func getBisectStatusText(bisectStatus BisectStatus, bisectInfo *git_commands.Bis
 func displayCommit(
 	common *common.Common,
 	commit *models.Commit,
-	branchHeadsToVisualize map[string]struct{},
+	branchHeadsToVisualize *set.Set[string],
 	cherryPickedCommitShaSet *set.Set[string],
 	diffName string,
 	timeFormat string,
@@ -311,7 +311,7 @@ func displayCommit(
 	} else {
 		if len(commit.Tags) > 0 {
 			tagString = theme.DiffTerminalColor.SetBold().Sprint(strings.Join(commit.Tags, " ")) + " "
-		} else if _, found := branchHeadsToVisualize[commit.Sha]; found && commit.Status != models.StatusMerged {
+		} else if branchHeadsToVisualize.Includes(commit.Sha) && commit.Status != models.StatusMerged {
 			tagString = style.FgCyan.SetBold().Sprint(
 				lo.Ternary(icons.IsIconEnabled(), icons.BRANCH_ICON, "*") + " ")
 		}
