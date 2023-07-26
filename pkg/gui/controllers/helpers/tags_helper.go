@@ -47,7 +47,9 @@ func (self *TagsHelper) OpenCreateTagPrompt(ref string, onCreate func()) error {
 			prompt := utils.ResolvePlaceholderString(
 				self.c.Tr.ForceTagPrompt,
 				map[string]string{
-					"tagName": tagName,
+					"tagName":    tagName,
+					"cancelKey":  self.c.UserConfig.Keybinding.Universal.Return,
+					"confirmKey": self.c.UserConfig.Keybinding.Universal.Confirm,
 				},
 			)
 			return self.c.Confirm(types.ConfirmOpts{

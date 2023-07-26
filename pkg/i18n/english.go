@@ -1055,7 +1055,7 @@ func EnglishTranslationSet() TranslationSet {
 		CreateTag:                           "Create tag",
 		CreatingTag:                         "Creating tag",
 		ForceTag:                            "Force Tag",
-		ForceTagPrompt:                      "The tag '{{.tagName}}' exists already. Press 'esc' to cancel, or 'enter' to overwrite.",
+		ForceTagPrompt:                      "The tag '{{.tagName}}' exists already. Press {{.cancelKey}} to cancel, or {{.confirmKey}} to overwrite.",
 		FetchRemote:                         "Fetch remote",
 		FetchingRemoteStatus:                "Fetching remote",
 		CheckoutCommit:                      "Checkout commit",

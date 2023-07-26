@@ -36,7 +36,7 @@ var ForceTagAnnotated = NewIntegrationTest(NewIntegrationTestArgs{
 			Tap(func() {
 				t.ExpectPopup().Confirmation().
 					Title(Equals("Force Tag")).
-					Content(Contains("The tag 'new-tag' exists already. Press 'esc' to cancel, or 'enter' to overwrite.")).
+					Content(Contains("The tag 'new-tag' exists already. Press <esc> to cancel, or <enter> to overwrite.")).
 					Confirm()
 			}).
 			Lines(
