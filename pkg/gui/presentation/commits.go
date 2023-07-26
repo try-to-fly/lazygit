@@ -311,9 +311,11 @@ func displayCommit(
 	} else {
 		if len(commit.Tags) > 0 {
 			tagString = theme.DiffTerminalColor.SetBold().Sprint(strings.Join(commit.Tags, " ")) + " "
-		} else if branchHeadsToVisualize.Includes(commit.Sha) && commit.Status != models.StatusMerged {
+		}
+
+		if branchHeadsToVisualize.Includes(commit.Sha) && commit.Status != models.StatusMerged {
 			tagString = style.FgCyan.SetBold().Sprint(
-				lo.Ternary(icons.IsIconEnabled(), icons.BRANCH_ICON, "*") + " ")
+				lo.Ternary(icons.IsIconEnabled(), icons.BRANCH_ICON, "*") + " " + tagString)
 		}
 	}
 

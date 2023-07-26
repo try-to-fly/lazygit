@@ -75,6 +75,23 @@ func TestGetCommitListDisplayStrings(t *testing.T) {
 						`),
 		},
 		{
+			testName: "commit with tags",
+			commits: []*models.Commit{
+				{Name: "commit1", Sha: "sha1", Tags: []string{"tag1", "tag2"}},
+				{Name: "commit2", Sha: "sha2"},
+			},
+			startIdx:                 0,
+			length:                   2,
+			showGraph:                false,
+			bisectInfo:               git_commands.NewNullBisectInfo(),
+			cherryPickedCommitShaSet: set.New[string](),
+			now:                      time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+			expected: formatExpected(`
+		sha1 tag1 tag2 commit1
+		sha2 commit2
+						`),
+		},
+		{
 			testName: "show local branch head, except the current branch, main branches, or merged branches",
 			commits: []*models.Commit{
 				{Name: "commit1", Sha: "sha1"},
@@ -100,6 +117,28 @@ func TestGetCommitListDisplayStrings(t *testing.T) {
 		sha2 * commit2
 		sha3 commit3
 		sha4 commit4
+						`),
+		},
+		{
+			testName: "show local branch head and tag if both exist",
+			commits: []*models.Commit{
+				{Name: "commit1", Sha: "sha1"},
+				{Name: "commit2", Sha: "sha2", Tags: []string{"some-tag"}},
+				{Name: "commit3", Sha: "sha3"},
+			},
+			branches: []*models.Branch{
+				{Name: "some-branch", CommitHash: "sha2"},
+			},
+			startIdx:                 0,
+			length:                   3,
+			showGraph:                false,
+			bisectInfo:               git_commands.NewNullBisectInfo(),
+			cherryPickedCommitShaSet: set.New[string](),
+			now:                      time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+			expected: formatExpected(`
+		sha1 commit1
+		sha2 * some-tag commit2
+		sha3 commit3
 						`),
 		},
 		{
