@@ -249,7 +249,7 @@ func (self *RefreshHelper) refreshCommits() {
 	wg.Wait()
 }
 
-func (self *RefreshHelper) determineCheckoutBranchName() string {
+func (self *RefreshHelper) determineCheckedOutBranchName() string {
 	if rebasedBranch := self.c.Git().Status.BranchBeingRebased(); rebasedBranch != "" {
 		// During a rebase we're on a detached head, so cannot determine the
 		// branch name in the usual way. We need to read it from the
@@ -294,7 +294,7 @@ func (self *RefreshHelper) refreshCommitsWithLimit() error {
 	self.c.Model().Commits = commits
 	self.RefreshAuthors(commits)
 	self.c.Model().WorkingTreeStateAtLastCommitRefresh = self.c.Git().Status.WorkingTreeState()
-	self.c.Model().CheckedOutBranch = self.determineCheckoutBranchName()
+	self.c.Model().CheckedOutBranch = self.determineCheckedOutBranchName()
 
 	return self.c.PostRefreshUpdate(self.c.Contexts().LocalCommits)
 }
