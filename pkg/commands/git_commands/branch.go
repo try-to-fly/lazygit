@@ -78,7 +78,7 @@ func (self *BranchCommands) CurrentBranchName() (string, error) {
 		Arg("HEAD").
 		ToArgv()
 
-	output, err := self.cmd.New(cmdArgs).RunWithOutput()
+	output, err := self.cmd.New(cmdArgs).DontLog().RunWithOutput()
 	if err == nil {
 		return strings.TrimSpace(output), nil
 	}
