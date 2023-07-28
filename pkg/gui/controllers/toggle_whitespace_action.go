@@ -24,7 +24,9 @@ func (self *ToggleWhitespaceAction) Call() error {
 	}
 
 	self.c.GetAppState().IgnoreWhitespaceInDiffView = !self.c.GetAppState().IgnoreWhitespaceInDiffView
-	_ = self.c.SaveAppState()
+	if err := self.c.SaveAppState(); err != nil {
+		self.c.Log.Errorf("error when saving app state: %v", err)
+	}
 
 	return self.c.CurrentSideContext().HandleFocus(types.OnFocusOpts{})
 }
