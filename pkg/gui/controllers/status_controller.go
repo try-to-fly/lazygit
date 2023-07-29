@@ -73,6 +73,11 @@ func (self *StatusController) GetOnRenderToMain() func() error {
 				fmt.Sprintf("Raise an Issue: %s", constants.Links.Issues),
 				fmt.Sprintf("Release Notes: %s", constants.Links.Releases),
 				style.FgMagenta.Sprintf("Become a sponsor: %s", constants.Links.Donate), // caffeine ain't free
+				fmt.Sprintf("Worktree path: %s", self.c.Git().RepoPaths.WorktreePath()),
+				fmt.Sprintf("Repo path: %s", self.c.Git().RepoPaths.RepoPath()),
+				fmt.Sprintf("Worktree Git dir: %s", self.c.Git().RepoPaths.WorktreeGitDirPath()),
+				fmt.Sprintf("Current path: %s", self.c.Git().RepoPaths.CurrentPath()),
+				fmt.Sprintf("Repo git dir: %s", self.c.Git().RepoPaths.RepoGitDirPath()),
 			}, "\n\n")
 
 		return self.c.RenderToMainViews(types.RefreshMainOpts{
